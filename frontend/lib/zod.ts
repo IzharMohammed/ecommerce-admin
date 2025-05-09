@@ -8,12 +8,12 @@ const getNameSchema = () =>
 const getEmailSchema = () =>
     z.string({ required_error: "Email is required" }).min(1, "Email is required").email()
 
-const getpasswordSchema = (type: "password" | "confirmPasswod") =>
+const getpasswordSchema = (type: "password" | "confirmPassword") =>
     z.string({ required_error: `${type}: is required` })
         .min(8, `${type} must be atleast 8 characters`)
         .max(32, `${type} can not exceed 32 characters`);
 
-const signUpSchema = z.object({
+export const signUpSchema = z.object({
     name: getNameSchema(),
     email: getEmailSchema(),
     password: getpasswordSchema("password"),
@@ -24,7 +24,7 @@ const signUpSchema = z.object({
         path: ["confirmPassword"], // path of error
     })
 
-const signInSchema = z.object({
+export const signInSchema = z.object({
     email: getEmailSchema(),
     password: getpasswordSchema("password"),
 })
