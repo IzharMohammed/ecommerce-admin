@@ -27,7 +27,10 @@ import { GithubIcon } from "lucide-react";
 
 export default function signIn() {
   const [pendingCredentials, setPendingCredentials] = useState(false);
+  const [pendingGithub, setPendingGithub] = useState(false);
+
   const { toast } = useToast();
+
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -35,7 +38,9 @@ export default function signIn() {
       password: "",
     },
   });
+
   const router = useRouter();
+
   const handleCredentialsSignIn = async (
     values: z.infer<typeof signInSchema>
   ) => {
@@ -64,8 +69,33 @@ export default function signIn() {
     setPendingCredentials(false);
   };
 
+  const handleSignInWithGithub = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onRequest: () => {
+          setPendingGithub(true);
+        },
+        onSuccess: async () => {
+          router.push("/");
+          router.refresh();
+        },
+        onError: (ctx: ErrorContext) => {
+          toast({
+            title: "Something went wrong",
+            description: ctx.error.message ?? "Something went wrong.",
+            variant: "destructive",
+          });
+        },
+      }
+    );
+    setPendingGithub(false);
+  };
+
   return (
-    <div className="grow flex items-center justify-center p-4">
+    <div className="grow mt-[10rem] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-gray-800">
@@ -108,7 +138,7 @@ export default function signIn() {
               </LoadingButton>
             </form>
           </Form>
-          {/* <div className="mt-4">
+          <div className="mt-4">
             <LoadingButton
               pending={pendingGithub}
               onClick={handleSignInWithGithub}
@@ -116,7 +146,7 @@ export default function signIn() {
               <GithubIcon className="w-4 h-4 mr-2" />
               Continue with GitHub
             </LoadingButton>
-          </div> */}
+          </div>
           <div className="mt-4 text-center text-sm">
             <Link
               href="/forgot-password"
