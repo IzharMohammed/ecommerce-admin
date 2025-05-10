@@ -2,7 +2,7 @@
 import LoadingButton from "@/components/loading-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@/auth-client";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 
 export default function signUp() {
   const [pending, setPending] = useState<boolean>(false);
@@ -47,7 +47,6 @@ export default function signUp() {
             title: "Something went wrong",
             description: ctx.error.message ?? "Something went wrong.",
           });
-          //   toast();
         },
       }
     );

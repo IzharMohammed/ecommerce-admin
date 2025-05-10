@@ -5,12 +5,14 @@ import type { Session } from "@/auth";
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/forgot-password", "/reset-password"];
 const publicRoutes = [...authRoutes, ...passwordRoutes];
+const adminRoutes = ["/admin"];
 
 export default async function authMiddleware(request: NextRequest) {
     const pathName = request.nextUrl.pathname;
     const isAuthRoute = authRoutes.includes(pathName);
     const isPasswordRoute = passwordRoutes.includes(pathName);
     const isPublicRoute = publicRoutes.includes(pathName);
+    const isAdminRoute = adminRoutes.includes(pathName);
 
     try {
         // Fetch the current user session using the request cookies
@@ -43,6 +45,11 @@ export default async function authMiddleware(request: NextRequest) {
             if (!token) {
                 return NextResponse.redirect(new URL("/forgot-password", request.url));
             }
+        }
+
+        // if user is not admin should not acces the users table 
+        if (isAdminRoute && session?.user.role !== "admin") {
+            return NextResponse.redirect(new URL("/", request.url));
         }
 
         // Continue to the requested page if all checks pass
