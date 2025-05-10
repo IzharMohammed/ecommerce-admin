@@ -89,9 +89,12 @@ export default function UsersTable() {
 						<TableCell>
 							{new Date(user.createdAt).toLocaleDateString()}
 						</TableCell>
+                        {
+                            user && user.role === "user" &&
 						<TableCell>
 							<ImpersonateUser userId={user.id} />
 						</TableCell>
+                        }
 					</TableRow>
 				))}
 			</TableBody>
