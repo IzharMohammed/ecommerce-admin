@@ -9,6 +9,12 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql", // or "mysql", "postgresql", ...etc
     }),
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ["google", "github"]
+        }
+    },
     socialProviders: {
         github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -18,8 +24,16 @@ export const auth = betterAuth({
     plugins: [openAPI()],   // api/auth/reference 
     emailAndPassword: {
         enabled: true,
-        requireEmailVerification: true
+        requireEmailVerification: true,
+        sendResetPassword: async ({ user, url }) => {
+            await sendEmail({
+                to: user.email,
+                subject: "Reset your password",
+                text: `Click the link to reset your password: ${url}`,
+            });
+        },
     },
+
     emailVerification: {
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
@@ -27,7 +41,7 @@ export const auth = betterAuth({
             const verificationUrl = `${process.env.BETTER_AUTH_URL}/api/auth/verify-email?token=${token}&callbackURL=${process.env.EMAIL_VERIFICATION_CALLBACK_URL}`;
             await sendEmail({
                 to: user.email,
-                subject: "Verify youur email address",
+                subject: "Verify your email address",
                 text: `Click the link to verify ur email:${verificationUrl}`
             })
         }
